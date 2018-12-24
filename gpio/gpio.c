@@ -68,7 +68,7 @@ char *usage = "Usage: gpio -v\n"
               "       gpio [-d] ...\n"
               "       [-x extension:params] [[ -x ...]] ...\n"
               "       gpio [-p] <read/write/wb> ...\n"
-              "       gpio <mode/read/write/aread/awritewb/pwm/pwmTone/clock> ...\n"
+              "       gpio <mode/read/write/mread/aread/awritewb/pwm/pwmTone/clock> ...\n"
               "       gpio <toggle/blink> <pin>\n"
 	      "       gpio readall\n"
 	      "       gpio unexportall/exports\n"
@@ -107,6 +107,12 @@ static int decodePin (const char *str)
   return 0 ;
 }
 #endif
+
+// MRead
+static char *alts [] =
+{
+  "IN", "OUT", "ALT5", "ALT4", "ALT0", "ALT1", "ALT2", "ALT3"
+};
 
 
 /*
@@ -719,6 +725,27 @@ static void doReset (UNU char *progName)
   printf ("GPIO Reset is dangerous and has been removed from the gpio command.\n") ;
   printf (" - Please write a shell-script to reset the GPIO pins into the state\n") ;
   printf ("   that you need them in for your applications.\n") ;
+}
+
+
+
+/*
+ * doMread:
+ *      Read a pin and return the mode
+ *********************************************************************************
+ */
+
+void doMread (int argc, char *argv [])
+{
+  int pin ;
+
+  if (argc != 3)
+  {
+    fprintf (stderr, "Usage: %s mread pin\n", argv [0]) ;
+    exit (1) ;
+  }
+  pin = atoi (argv [2]) ;
+  printf ("%4s\n", alts [getAlt (pin)]) ;
 }
 
 
@@ -1502,6 +1529,7 @@ int main (int argc, char *argv [])
   else if (strcasecmp (argv [1], "pwm"    ) == 0) doPwm       (argc, argv) ;
   else if (strcasecmp (argv [1], "awrite" ) == 0) doAwrite    (argc, argv) ;
   else if (strcasecmp (argv [1], "aread"  ) == 0) doAread     (argc, argv) ;
+  else if (strcasecmp (argv [1], "mread"  ) == 0) doMread     (argc, argv) ;
 
 // GPIO Nicies
 
